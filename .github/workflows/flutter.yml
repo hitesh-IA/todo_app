@@ -1,39 +1,67 @@
 name: Flutter CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
   pull_request:
     branches:
-      - main
       - develop
 
+  push:
+    branches:
+      - develop
+      - main
+
 jobs:
-  build:
+  build-and-release:
+    name: Build & Release
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # - uses: actions/setup-java@v3
+    #   with:
+    #     distribution: 'zulu'
+    #     java-version: '17'
+
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-         flutter-version: '3.24.0'
+        channel: 'stable'
+        architecture: x64
+        flutter-version: '3.24.0'
+    
+    - name: Build Android APK
+      run: flutter build apk --release --split-per-abi
 
-    - name: Install dependencies
-      run: flutter pub get
+    - name: Build APK
+      if: github.ref == 'refs/heads/develop'
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "build/app/outputs/apk/release/*"
+        tag: v1.0.${{ github.run_number }}
+        token: ${{ secrets.TOKEN }}
+
+    - name: Push to Releases
+      if: github.ref == 'refs/heads/main'
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "build/app/outputs/apk/release/*"
+        tag: v1.0.${{ github.run_number }}
+        token: ${{ secrets.TOKEN }}
+
+
+    #- name: Install dependencies
+    #  run: flutter pub get
 
     #- name: Run tests
     #  run: flutter test
 
-    - name: Build APK
-      run: flutter build apk --release
+    #- name: Build APK
+    #  run: flutter build apk --release
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: flutter-apk
-        path: build/app/outputs/flutter-apk/To-do.apk
+    #- name: Upload APK
+    #  uses: actions/upload-artifact@v3
+    #  with:
+    #    name: flutter-apk
+    #    path: build/app/outputs/flutter-apk/To-do.apk
