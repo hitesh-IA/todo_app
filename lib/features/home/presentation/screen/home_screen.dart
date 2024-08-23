@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/features/home/presentation/provider/tasks_counter_provider.dart';
 import 'package:todo_app/features/home/presentation/provider/todos_provider.dart';
 import 'package:todo_app/features/home/presentation/widget/custom_bottom_nav_bar.dart';
+import 'package:todo_app/features/home/presentation/widget/custom_new_todo_dialog.dart';
 import 'package:todo_app/features/home/presentation/widget/todo_widget.dart';
 import 'package:todo_app/features/home/presentation/widget/welcome_card.dart';
 
@@ -37,6 +38,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       TodoFilter.reminders => 'reminders tasks',
     };
 
+    final noPlanTodayMessage = switch (currentFilter) {
+      TodoFilter.all => 'oh! you don\'t have any plan today?😞',
+      TodoFilter.completed => 'oh! there is no completed plan',
+      TodoFilter.pending => 'oh! there is no pending plan',
+      TodoFilter.reminders => 'oh! there is no reminders plan',
+    };
+
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -64,31 +72,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
             /// show todos list items.
             Expanded(
-              child: MediaQuery.removePadding(
-                context: context,
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(
-                    top: 10,
-                  ),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: todos.length,
-                  itemBuilder: (context, index) {
-                    final todo = todos[index];
-                    return TodoWidget(
-                      id: todo.id,
-                      description: todo.descriptions,
-                      completed: todo.completed,
-                      onTapcheckBox: () {
-                        ref.watch(todosProvider.notifier).toggleTodo(todo.id);
+              child: todos.isNotEmpty
+                  ? ListView.builder(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                      ),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: todos.length,
+                      itemBuilder: (context, index) {
+                        final todo = todos[index];
+                        return TodoWidget(
+                          id: todo.id,
+                          description: todo.descriptions,
+                          completed: todo.completed,
+                          onTapcheckBox: () {
+                            ref
+                                .watch(todosProvider.notifier)
+                                .toggleTodo(todo.id);
+                          },
+                          onTapDelete: () {
+                            ref
+                                .watch(todosProvider.notifier)
+                                .deleteTodo(todo.id);
+                            Navigator.of(context).pop();
+                          },
+                        );
                       },
-                      onTapDelete: () {
-                        ref.watch(todosProvider.notifier).deleteTodo(todo.id);
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  },
-                ),
-              ),
+                    )
+                  : Center(
+                      child: Text(
+                        noPlanTodayMessage,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.roboto(
+                          color: const Color(0xFF8C8C8C),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
             )
           ],
         ),
@@ -110,15 +132,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       barrierDismissible: true,
       context: context,
       builder: (context) {
-        return Center(
-          child: Text(
-            'opening dialog for new ToDo task',
-            style: GoogleFonts.roboto(
-              color: Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        return CustomNewTodoDialog(
+          onCreateListener: () {
+            final newTodo = ref.read(newTodoProvider);
+            if (newTodo.isNotEmpty) {
+              ref.read(todosProvider.notifier).addTodo(description: newTodo);
+              ref.read(newTodoProvider.notifier).update((state) => '');
+              ref
+                  .read(selectedFilterTodoProvider.notifier)
+                  .update((state) => TodoFilter.all);
+              Navigator.of(context).pop();
+            }
+          },
         );
       },
     );

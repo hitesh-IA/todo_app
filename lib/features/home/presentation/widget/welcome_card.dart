@@ -88,33 +88,33 @@ class WelcomeCard extends StatelessWidget {
 
           /// search bar widget section
           /// later add to functionality with hive local database
-          Positioned(
-            right: 0,
-            top: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: AnimSearchBar(
-                autoFocus: false,
-                width: MediaQuery.of(context).size.width * 0.9,
-                textController: TextEditingController(),
-                onSuffixTap: () {},
-                style: GoogleFonts.roboto(
-                  color: const Color(0xFF9C9A9A),
-                ),
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  color: Color(0xFF9C9A9A),
-                ),
-                suffixIcon: const Icon(
-                  Icons.clear_rounded,
-                  color: Color(0xFF9C9A9A),
-                ),
-                onSubmitted: (value) {
-                  //later add this feature
-                },
-              ),
-            ),
-          )
+          // Positioned(
+          //   right: 0,
+          //   top: 0,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(20.0),
+          //     child: AnimSearchBar(
+          //       autoFocus: false,
+          //       width: MediaQuery.of(context).size.width * 0.9,
+          //       textController: TextEditingController(),
+          //       onSuffixTap: () {},
+          //       style: GoogleFonts.roboto(
+          //         color: const Color(0xFF9C9A9A),
+          //       ),
+          //       prefixIcon: const Icon(
+          //         Icons.search_rounded,
+          //         color: Color(0xFF9C9A9A),
+          //       ),
+          //       suffixIcon: const Icon(
+          //         Icons.clear_rounded,
+          //         color: Color(0xFF9C9A9A),
+          //       ),
+          //       onSubmitted: (value) {
+          //         //later add this feature
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

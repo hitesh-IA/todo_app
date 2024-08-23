@@ -3,7 +3,7 @@ import 'package:todo_app/features/home/domain/models/todo.dart';
 import 'package:todo_app/features/home/domain/repository/todos_repository.dart';
 import 'package:todo_app/features/home/presentation/provider/todos_repo_provider.dart';
 
-enum TodoFilter { all, pending, completed, reminders }
+enum TodoFilter { all, completed, pending, reminders }
 
 /// this provider for managing for current selected [TodoFilter].
 final selectedFilterTodoProvider = StateProvider<TodoFilter>(
