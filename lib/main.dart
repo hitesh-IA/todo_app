@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/config/theme/app_theme.dart';
+import 'package:todo_app/features/home/presentation/screen/home_screen.dart';
 
 void main() {
   runApp(
@@ -19,9 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme().getAppTheme(),
       darkTheme: ThemeData.dark(),
-      home: const Center(
-        child: Text('home screen'),
-      ),
+      home: const HomeScreen(),
     );
   }
 }
