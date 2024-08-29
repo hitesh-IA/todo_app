@@ -30,17 +30,24 @@ jobs:
         channel: 'stable'
         architecture: x64
         flutter-version: '3.24.0'
+
+    - name: Install dependencies
+      run: flutter pub get
+    
+    # Generate code (Freezed, Riverpod, etc.)
+    - name: Generate code
+      run: flutter pub run build_runner build --delete-conflicting-outputs
     
     - name: Build Android APK
       run: flutter build apk --release --split-per-abi
 
-    - name: Build APK
-      if: github.ref == 'refs/heads/develop'
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "build/app/outputs/apk/release/*"
-        tag: v1.0.${{ github.run_number }}
-        token: ${{ secrets.TOKEN }}
+    # - name: Build APK
+    #   if: github.ref == 'refs/heads/develop'
+    #   uses: ncipollo/release-action@v1
+    #   with:
+    #     artifacts: "build/app/outputs/apk/release/*"
+    #     tag: v1.0.${{ github.run_number }}
+    #     token: ${{ secrets.TOKEN }}
 
     - name: Push to Releases
       if: github.ref == 'refs/heads/main'
@@ -50,9 +57,6 @@ jobs:
         tag: v1.0.${{ github.run_number }}
         token: ${{ secrets.TOKEN }}
 
-
-    #- name: Install dependencies
-    #  run: flutter pub get
 
     #- name: Run tests
     #  run: flutter test

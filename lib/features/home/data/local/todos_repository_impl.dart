@@ -18,11 +18,13 @@ class TodosRepositoryImpl extends TodosRepository {
   }
 
   @override
-  Future<void> addTodo({required String description}) async {
+  Future<void> addTodo(
+      {required String title, required String description}) async {
     final box = await db;
     const uuid = Uuid();
     final newTodo = Todo(
       id: uuid.v4(),
+      taskTitle: title,
       descriptions: description,
       completed: false,
     );

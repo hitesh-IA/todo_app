@@ -3,7 +3,7 @@ import 'package:todo_app/features/home/domain/models/todo.dart';
 import 'package:todo_app/features/home/domain/repository/todos_repository.dart';
 import 'package:todo_app/features/home/presentation/provider/todos_repo_provider.dart';
 
-enum TodoFilter { all, completed, pending, reminders }
+enum TodoFilter { all, completed, pending, newtask }
 
 /// this provider for managing for current selected [TodoFilter].
 final selectedFilterTodoProvider = StateProvider<TodoFilter>(
@@ -24,8 +24,9 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
   final TodosRepository todosRepository;
   TodosNotifier({required this.todosRepository}) : super([]);
 
-  Future<void> addTodo({required String description}) async {
-    await todosRepository.addTodo(description: description);
+  Future<void> addTodo(
+      {required String title, required String description}) async {
+    await todosRepository.addTodo(title: title, description: description);
     state = await todosRepository.getTodos();
   }
 
@@ -54,12 +55,18 @@ final filteredTodosProvider = Provider<List<Todo>>(
       TodoFilter.all => todos,
       TodoFilter.pending => todos.where((todo) => !todo.completed).toList(),
       TodoFilter.completed => todos.where((todo) => todo.completed).toList(),
-      TodoFilter.reminders => <Todo>[]
+      TodoFilter.newtask => <Todo>[]
     };
   },
 );
 
-final newTodoProvider = StateProvider<String>(
+final newTodoDescriptionProvider = StateProvider<String>(
+  (ref) {
+    return '';
+  },
+);
+
+final newTodoTitleProvider = StateProvider<String>(
   (ref) {
     return '';
   },
