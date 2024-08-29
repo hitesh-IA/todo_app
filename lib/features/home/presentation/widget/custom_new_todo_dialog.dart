@@ -16,6 +16,8 @@ class CustomNewTodoDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final FocusNode focusNode = FocusNode();
+    final FocusNode focusNode1 = FocusNode();
+
     return BackdropFilter(
       filter: ImageFilter.blur(
         sigmaX: 6,
@@ -27,34 +29,74 @@ class CustomNewTodoDialog extends ConsumerWidget {
         ),
         title: Column(
           children: [
-            Container(
-              height: 45,
-              width: 45,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 20,
-                    spreadRadius: 0,
-                    offset: Offset(0, 0),
+            Row(
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 20,
+                        spreadRadius: 0,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                    color: Colors.white,
                   ),
-                ],
-                color: Colors.white,
-              ),
-              child: const Icon(
-                Icons.note_alt_outlined,
-                color: Color.fromARGB(255, 143, 128, 128),
-              ),
+                  child: const Icon(
+                    Icons.note_alt_outlined,
+                    color: Color.fromARGB(255, 143, 128, 128),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text(
+                    'New Task',
+                    style: GoogleFonts.roboto(
+                        fontSize: 23,
+                        color: const Color.fromARGB(255, 143, 128, 128),
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Text(
-                'New Task',
+            const SizedBox(
+              height: 10.0,
+            ),
+            SizedBox(
+              height: 60,
+              child: TextField(
+                focusNode: focusNode1,
+                maxLines: null,
+                expands: true,
                 style: GoogleFonts.roboto(
-                    fontSize: 23,
-                    color: const Color.fromARGB(255, 143, 128, 128),
-                    fontWeight: FontWeight.bold),
+                  color: const Color.fromARGB(255, 128, 124, 124),
+                ),
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  filled: false,
+                  hintText: 'Title',
+                  hintStyle: GoogleFonts.roboto(
+                    color: const Color(0xFF9C9A9A),
+                  ),
+                ),
+                onChanged: (value) {
+                  ref
+                      .read(newTodoTitleProvider.notifier)
+                      .update((state) => value);
+                },
+                onTapOutside: (event) {
+                  focusNode1.unfocus();
+                },
               ),
             ),
           ],
@@ -80,7 +122,9 @@ class CustomNewTodoDialog extends ConsumerWidget {
               ),
             ),
             onChanged: (value) {
-              ref.read(newTodoProvider.notifier).update((state) => value);
+              ref
+                  .read(newTodoDescriptionProvider.notifier)
+                  .update((state) => value);
             },
             onTapOutside: (event) {
               focusNode.unfocus();

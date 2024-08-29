@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_app/features/home/domain/models/todo.dart';
 import 'package:todo_app/features/home/presentation/provider/tasks_counter_provider.dart';
 import 'package:todo_app/features/home/presentation/provider/todos_provider.dart';
 import 'package:todo_app/features/home/presentation/widget/custom_bottom_nav_bar.dart';
@@ -28,21 +31,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final completedCounter = ref.watch(completedCounterProvider);
     final pendingCounter = ref.watch(pendingCounterProvider);
-    final remindersCounter = ref.watch(remindersCounterProvider);
+    final newTaskCounter = ref.watch(newTaskCounterProvider);
     final currentFilter = ref.watch(selectedFilterTodoProvider);
 
     final tasksTitleGroup = switch (currentFilter) {
       TodoFilter.all => 'All tasks',
-      TodoFilter.pending => 'pending tasks',
-      TodoFilter.completed => 'completed tasks',
-      TodoFilter.reminders => 'reminders tasks',
+      TodoFilter.pending => 'Pending tasks',
+      TodoFilter.completed => 'Completed tasks',
+      TodoFilter.newtask => 'New tasks',
     };
 
     final noPlanTodayMessage = switch (currentFilter) {
       TodoFilter.all => 'oh! you don\'t have any plan today?😞',
       TodoFilter.completed => 'oh! there is no completed plan',
       TodoFilter.pending => 'oh! there is no pending plan',
-      TodoFilter.reminders => 'oh! there is no reminders plan',
+      TodoFilter.newtask => 'oh! there is no new task plan',
     };
 
     return Scaffold(
@@ -54,7 +57,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             WelcomeCard(
               pendingCounter: pendingCounter,
               completedCounter: completedCounter,
-              remindersCounter: remindersCounter,
+              newTaskCounter: newTaskCounter,
             ),
 
             /// task stutas title filter section.
@@ -81,21 +84,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       itemCount: todos.length,
                       itemBuilder: (context, index) {
                         final todo = todos[index];
-                        return TodoWidget(
-                          id: todo.id,
-                          description: todo.descriptions,
-                          completed: todo.completed,
-                          onTapcheckBox: () {
-                            ref
-                                .watch(todosProvider.notifier)
-                                .toggleTodo(todo.id);
+                        return InkWell(
+                          onTap: () {
+                            _showTodoTaskDialog(context, todo);
                           },
-                          onTapDelete: () {
-                            ref
-                                .watch(todosProvider.notifier)
-                                .deleteTodo(todo.id);
-                            Navigator.of(context).pop();
-                          },
+                          child: TodoWidget(
+                            id: todo.id,
+                            title: todo.taskTitle,
+                            description: todo.descriptions,
+                            completed: todo.completed,
+                            onTapcheckBox: () {
+                              ref
+                                  .watch(todosProvider.notifier)
+                                  .toggleTodo(todo.id);
+                            },
+                            onTapDelete: () {
+                              ref
+                                  .watch(todosProvider.notifier)
+                                  .deleteTodo(todo.id);
+                              Navigator.of(context).pop();
+                            },
+                          ),
                         );
                       },
                     )
@@ -127,6 +136,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  _showTodoTaskDialog(BuildContext context, Todo todo) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 6,
+            sigmaY: 6,
+          ),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              todo.taskTitle,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            content: Text(
+              todo.descriptions,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   _showNewTodoDialog(BuildContext context) {
     showDialog(
       barrierDismissible: true,
@@ -134,10 +170,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context) {
         return CustomNewTodoDialog(
           onCreateListener: () {
-            final newTodo = ref.read(newTodoProvider);
-            if (newTodo.isNotEmpty) {
-              ref.read(todosProvider.notifier).addTodo(description: newTodo);
-              ref.read(newTodoProvider.notifier).update((state) => '');
+            final newTodoTitle = ref.read(newTodoTitleProvider);
+            final newTodoDesciption = ref.read(newTodoDescriptionProvider);
+            if (newTodoTitle.isNotEmpty && newTodoDesciption.isNotEmpty) {
+              ref.read(todosProvider.notifier).addTodo(
+                    title: newTodoTitle,
+                    description: newTodoDesciption,
+                  );
+              ref.read(newTodoTitleProvider.notifier).update((state) => '');
+              ref
+                  .read(newTodoDescriptionProvider.notifier)
+                  .update((state) => '');
               ref
                   .read(selectedFilterTodoProvider.notifier)
                   .update((state) => TodoFilter.all);

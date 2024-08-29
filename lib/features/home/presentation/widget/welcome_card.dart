@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:todo_app/features/home/presentation/widget/custom_searchbar.dart';
 import 'package:todo_app/features/home/presentation/widget/task_counter_card.dart';
 
 class WelcomeCard extends StatelessWidget {
@@ -8,12 +7,12 @@ class WelcomeCard extends StatelessWidget {
     super.key,
     required this.pendingCounter,
     required this.completedCounter,
-    required this.remindersCounter,
+    required this.newTaskCounter,
   });
 
   final int pendingCounter;
   final int completedCounter;
-  final int remindersCounter;
+  final int newTaskCounter;
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +76,8 @@ class WelcomeCard extends StatelessWidget {
                     iconData: Icons.check_circle,
                   ),
                   TaskCounterCard(
-                    tasksCounter: remindersCounter,
-                    taskType: 'reminders',
+                    tasksCounter: newTaskCounter,
+                    taskType: 'new task',
                     iconData: Icons.check_circle,
                   )
                 ],

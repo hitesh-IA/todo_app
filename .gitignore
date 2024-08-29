@@ -48,6 +48,7 @@ app.*.map.json
 
 # generate file
 *.freezed.dart
+*.g.dart 
 *.gr.dart
 
 # Web related
