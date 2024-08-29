@@ -40,7 +40,7 @@ class CustomBottomNavBar extends ConsumerWidget {
           selectedIcon: const Icon(Icons.access_time_filled_outlined),
           selectedColor: selectedColor,
           unSelectedColor: unSelectedColor,
-          title: const Text('Reminders'),
+          title: const Text('New Task'),
         ),
       ],
       hasNotch: true,

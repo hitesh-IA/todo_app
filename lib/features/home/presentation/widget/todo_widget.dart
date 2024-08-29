@@ -7,6 +7,7 @@ class TodoWidget extends StatelessWidget {
   const TodoWidget({
     super.key,
     required this.id,
+    required this.title,
     required this.description,
     required this.completed,
     required this.onTapcheckBox,
@@ -14,6 +15,7 @@ class TodoWidget extends StatelessWidget {
   });
 
   final String id;
+  final String title;
   final String description;
   final bool completed;
   final void Function() onTapcheckBox;
@@ -58,7 +60,7 @@ class TodoWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Text(
-                description,
+                title,
                 style: GoogleFonts.roboto(
                     color: const Color(0xFF6C6868),
                     fontSize: 15,

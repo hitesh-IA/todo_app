@@ -7,12 +7,15 @@ class Todo {
   @HiveField(0)
   final String id;
   @HiveField(1)
-  String descriptions;
+  String taskTitle;
   @HiveField(2)
+  String descriptions;
+  @HiveField(3)
   bool completed;
 
   Todo({
     required this.id,
+    required this.taskTitle,
     required this.descriptions,
     required this.completed,
   });

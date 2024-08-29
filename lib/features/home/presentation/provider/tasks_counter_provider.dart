@@ -17,7 +17,7 @@ final completedCounterProvider = Provider<int>(
   },
 );
 
-final remindersCounterProvider = Provider<int>(
+final newTaskCounterProvider = Provider<int>(
   (ref) {
     return 0;
   },
