@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todo_app/features/home/domain/models/todo.dart';
 import 'package:todo_app/features/home/presentation/provider/tasks_counter_provider.dart';
 import 'package:todo_app/features/home/presentation/provider/todos_provider.dart';
 import 'package:todo_app/features/home/presentation/widget/custom_bottom_nav_bar.dart';
@@ -48,6 +45,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       TodoFilter.newtask => 'oh! there is no new task plan',
     };
 
+    //todos.sort((a, b) => a.taskTitle.compareTo(b.taskTitle));
+
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -84,27 +83,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       itemCount: todos.length,
                       itemBuilder: (context, index) {
                         final todo = todos[index];
-                        return InkWell(
-                          onTap: () {
-                            _showTodoTaskDialog(context, todo);
+                        return TodoWidget(
+                          id: todo.id,
+                          title: todo.taskTitle,
+                          description: todo.descriptions,
+                          completed: todo.completed,
+                          onTapcheckBox: () {
+                            ref
+                                .watch(todosProvider.notifier)
+                                .toggleTodo(todo.id);
                           },
-                          child: TodoWidget(
-                            id: todo.id,
-                            title: todo.taskTitle,
-                            description: todo.descriptions,
-                            completed: todo.completed,
-                            onTapcheckBox: () {
-                              ref
-                                  .watch(todosProvider.notifier)
-                                  .toggleTodo(todo.id);
-                            },
-                            onTapDelete: () {
-                              ref
-                                  .watch(todosProvider.notifier)
-                                  .deleteTodo(todo.id);
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                          onTapDelete: () {
+                            ref
+                                .watch(todosProvider.notifier)
+                                .deleteTodo(todo.id);
+                            Navigator.of(context).pop();
+                          },
                         );
                       },
                     )
@@ -133,33 +127,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
-  }
-
-  _showTodoTaskDialog(BuildContext context, Todo todo) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 6,
-            sigmaY: 6,
-          ),
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              todo.taskTitle,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            content: Text(
-              todo.descriptions,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        );
-      },
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/features/home/presentation/widget/custom_delete_todo_dialog.dart';
@@ -43,55 +45,89 @@ class TodoWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      child: Row(
-        children: [
-          CustomIconButton(
-            icon: Icon(
-              (completed)
-                  ? Icons.check_box_rounded
-                  : Icons.check_box_outline_blank_rounded,
-              color: Colors.blue,
-              size: 23,
+      child: InkWell(
+        onTap: () {
+          _showTodoTaskDialog(context, title, description);
+        },
+        splashColor: const Color(0x8034b0fc),
+        child: Row(
+          children: [
+            CustomIconButton(
+              icon: Icon(
+                (completed)
+                    ? Icons.check_box_rounded
+                    : Icons.check_box_outline_blank_rounded,
+                color: Colors.blue,
+                size: 23,
+              ),
+              color: Colors.blue.withOpacity(0.3),
+              onTap: onTapcheckBox,
             ),
-            color: Colors.blue.withOpacity(0.3),
-            onTap: onTapcheckBox,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Text(
-                title,
-                style: GoogleFonts.roboto(
-                    color: const Color(0xFF6C6868),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    decoration: completed ? TextDecoration.lineThrough : null,
-                    decorationThickness: completed ? 2.0 : null,
-                    decorationColor: completed ? Colors.blue : null),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  title,
+                  style: GoogleFonts.roboto(
+                      color: const Color(0xFF6C6868),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      decoration: completed ? TextDecoration.lineThrough : null,
+                      decorationThickness: completed ? 2.0 : null,
+                      decorationColor: completed ? Colors.blue : null),
+                ),
               ),
             ),
-          ),
-          CustomIconButton(
-            icon: const Icon(
-              Icons.disabled_by_default_rounded,
-              color: Colors.red,
-              size: 23,
+            CustomIconButton(
+              icon: const Icon(
+                Icons.disabled_by_default_rounded,
+                color: Colors.red,
+                size: 23,
+              ),
+              color: Colors.red.withOpacity(0.3),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CustomDeleteTodoDialog(
+                      content: 'Are you sure you want to delete?',
+                      onTapDelete: onTapDelete,
+                    );
+                  },
+                );
+              },
             ),
-            color: Colors.red.withOpacity(0.3),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return CustomDeleteTodoDialog(
-                    content: 'Are you sure you want to delete?',
-                    onTapDelete: onTapDelete,
-                  );
-                },
-              );
-            },
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  _showTodoTaskDialog(
+      BuildContext context, String taskTitle, String descriptions) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 6,
+            sigmaY: 6,
+          ),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              taskTitle,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            content: Text(
+              descriptions,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        );
+      },
     );
   }
 }
